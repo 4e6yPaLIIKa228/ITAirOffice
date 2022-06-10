@@ -19,5 +19,6 @@
             </DataGrid.Columns>
         </DataGrid>
         <Button x:Name="btnexit" Content="Button" HorizontalAlignment="Left" Margin="612,10,0,0" VerticalAlignment="Top" Width="75" Click="btnexit_Click"/>
+        <Button x:Name="btnbuybulet" Content="Button" HorizontalAlignment="Left" Margin="180,10,0,0" VerticalAlignment="Top" Width="75" Click="btnbuybulet_Click"/>
     </Grid>
 </Window>

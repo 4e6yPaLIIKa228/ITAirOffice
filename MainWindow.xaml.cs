@@ -69,5 +69,14 @@ namespace ITAirOffice
                 }
             }
         }
+
+        private void btnbuybulet_Click(object sender, RoutedEventArgs e)
+        {
+            BuyTicket Aftoriz = new BuyTicket();
+            this.Close();
+            Aftoriz.ShowDialog();
+        }
+
+
     }
 }

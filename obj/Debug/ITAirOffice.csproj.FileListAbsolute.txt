@@ -23,3 +23,6 @@ C:\Users\Студент\source\repos\ITAirOffice\obj\Debug\ITAirOffice.csproj.Co
 C:\Users\Студент\source\repos\ITAirOffice\obj\Debug\ITAirOffice.csproj.CopyComplete
 C:\Users\Студент\source\repos\ITAirOffice\obj\Debug\ITAirOffice.exe
 C:\Users\Студент\source\repos\ITAirOffice\obj\Debug\ITAirOffice.pdb
+C:\Users\Студент\source\repos\ITAirOffice\obj\Debug\ITAirOffice.csproj.AssemblyReference.cache
+C:\Users\Студент\source\repos\ITAirOffice\obj\Debug\BuyTicket.g.cs
+C:\Users\Студент\source\repos\ITAirOffice\obj\Debug\BuyTicket.baml

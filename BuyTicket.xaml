@@ -1,0 +1,18 @@
+﻿<Window x:Class="ITAirOffice.BuyTicket"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ITAirOffice"
+        mc:Ignorable="d"
+        Title="BuyTicket" Height="450" Width="800" AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" MouseLeftButtonDown="Window_MouseLeftButtonDown" >
+    <Grid>
+        <ComboBox x:Name="cmbFromAir" Margin="58,43,501,367" SelectionChanged="cmbFromAir_SelectionChanged"/>
+        <ComboBox x:Name="cmbInAir" Margin="58,97,401,306" SelectionChanged="cmbInAir_SelectionChanged"/>
+        <Button x:Name="btnexit" Margin="678,10,54,402" Click="btnexit_Click" />
+        <Label Margin="58,158,501,266" Content="price"/>
+        <ComboBox x:Name="cmbtimeFrom" Margin="58,199,501,211" SelectionChanged="cmbtimeFrom_SelectionChanged"/>
+        <ComboBox x:Name="cmbtimeIn" Margin="58,255,501,155" SelectionChanged="cmbtimeIn_SelectionChanged" MouseMove="cmbtimeIn_MouseMove" MouseLeftButtonDown="cmbtimeIn_MouseLeftButtonDown"/>
+
+    </Grid>
+</Window>
