@@ -97,7 +97,8 @@ namespace ITAirOffice
             {
                 cmbInAir.IsEnabled = true;                              
                 bool resultClass = int.TryParse(cmbFromAir.SelectedValue.ToString(), out IDcmdFrom);
-                
+                cmbtimeIn.SelectedIndex = -1;
+
             }
             if (cmbInAir.SelectedIndex == -1)
             {
@@ -110,6 +111,7 @@ namespace ITAirOffice
                 bool resultClass = int.TryParse(cmbFromAir.SelectedValue.ToString(), out IDcmdIn);
                 SearchRoutes();
                 SearchFlightsFrom();
+                cmbtimeIn.SelectedIndex = -1;
             }           
                 
         }
@@ -187,6 +189,7 @@ namespace ITAirOffice
         {
             //SearchFlightsIn();
             cmbtimeIn.IsEnabled = true;
+            cmbtimeIn.SelectedIndex = -1;
             //string theSelectedStringInBanksComboBox = (string)cmbtimeFrom.SelectedItem;
             //MessageBox.Show(theSelectedStringInBanksComboBox);
 
@@ -206,12 +209,17 @@ namespace ITAirOffice
 
         private void cmbtimeIn_MouseMove(object sender, MouseEventArgs e)
         {
-            SearchFlightsIn();
+           // SearchFlightsIn();
         }
 
         private void cmbtimeIn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             MessageBox.Show("");
+        }
+
+        private void cmbtimeIn_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            SearchFlightsIn();
         }
 
         private void cmbInAir_SelectionChanged(object sender, SelectionChangedEventArgs e)

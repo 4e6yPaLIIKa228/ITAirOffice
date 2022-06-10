@@ -12,7 +12,7 @@
         <Button x:Name="btnexit" Margin="678,10,54,402" Click="btnexit_Click" />
         <Label Margin="58,158,501,266" Content="price"/>
         <ComboBox x:Name="cmbtimeFrom" Margin="58,199,501,211" SelectionChanged="cmbtimeFrom_SelectionChanged"/>
-        <ComboBox x:Name="cmbtimeIn" Margin="58,255,501,155" SelectionChanged="cmbtimeIn_SelectionChanged" MouseMove="cmbtimeIn_MouseMove" MouseLeftButtonDown="cmbtimeIn_MouseLeftButtonDown"/>
+        <ComboBox x:Name="cmbtimeIn" Margin="58,255,501,155" SelectionChanged="cmbtimeIn_SelectionChanged" MouseMove="cmbtimeIn_MouseMove" MouseLeftButtonDown="cmbtimeIn_MouseLeftButtonDown" PreviewMouseLeftButtonDown="cmbtimeIn_PreviewMouseLeftButtonDown"/>
 
     </Grid>
 </Window>
