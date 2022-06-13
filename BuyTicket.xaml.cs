@@ -22,14 +22,14 @@ namespace ITAirOffice
     /// </summary>
     public partial class BuyTicket : Window
     {
-        int IDcmdFrom, IDcmdIn,IDRoutes;
+        int IDcmdFrom, IDcmdIn, IDRoutes;
         public BuyTicket()
         {
             InitializeComponent();
             LoadcmbAirFrom();
             LoadcmbAirIn();
             Check();
-
+            LoadDG();
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -42,7 +42,7 @@ namespace ITAirOffice
         }
 
         private void LoadcmbAirFrom()
-        {            
+        {
             try
             {
                 using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
@@ -95,7 +95,7 @@ namespace ITAirOffice
             }
             else
             {
-                cmbInAir.IsEnabled = true;                              
+                cmbInAir.IsEnabled = true;
                 bool resultClass = int.TryParse(cmbFromAir.SelectedValue.ToString(), out IDcmdFrom);
                 cmbtimeIn.SelectedIndex = -1;
 
@@ -112,8 +112,8 @@ namespace ITAirOffice
                 SearchRoutes();
                 SearchFlightsFrom();
                 cmbtimeIn.SelectedIndex = -1;
-            }           
-                
+            }
+
         }
 
         public void SearchFlightsFrom()
@@ -185,6 +185,137 @@ namespace ITAirOffice
             }
         }
 
+        public void LoadDG()
+        {
+            //try
+            //{
+            //    using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
+            //    {
+            //        //connection.Open();
+            //        //string query = $@"";
+            //        //SQLiteCommand cmd = new SQLiteCommand(query, connection);
+            //        DataTable DT = new DataTable();
+            //        // DataRow row;
+            //        //SQLiteDataAdapter SDA = new SQLiteDataAdapter(cmd);
+            //        //SDA.Fill(DT);
+            //        //tst.ItemsSource = DT.DefaultView;
+            //        //cmd.ExecuteNonQuery();
+            //        foreach (DataRow row in DT.Rows)
+            //       {
+            //            //int countB = 0, countP = 0, countH = 0;
+
+            //            for (int i = 1; i <= 20; i++)
+            //            {
+            //               // row = DT.NewRow();
+            //               // row["A"] = i;
+            //              //  row["item"] = "item " + i.ToString();
+            //              //  DT.Rows.Add(row);
+            //                //    string temp = Convert.ToString(row[$@"Day{i}"]);
+            //                //    if (temp == "б")
+            //                //    {
+            //                //        countB++;
+            //                //    }
+            //                //    if (temp == "п")
+            //                //    {
+            //                //        countP++;
+            //                //    }
+            //                //    if (temp == "н")
+            //                //    {
+            //                //        countH++;
+            //                //    }
+            //                //}
+            //                row["A"] = i;
+            //                row["B"] = i;
+            //                row["C"] = i;
+            //                //row["SumP"] = countP;
+            //                //row["SumH"] = countH;
+            //            }
+            //       }
+            //    }
+            //}
+            //catch (Exception exp)
+            //{
+            //    MessageBox.Show(exp.Message);
+
+            //}
+
+            //DataTable DT = new DataTable();
+            //DataTable dt = new DataTable();
+
+            //DataRow row = dt.NewRow();
+            // DataColumn col = new DataColumn();
+            // DataGrid.Items.Add(new DataItem());          
+
+
+            //tst.Items.Add(1);//Строчка
+            // DataTable dt = new DataTable();
+
+            // DataGridTextColumn textColumn = new DataGridTextColumn();
+            //  textColumn.Header = "A";
+            //textColumn.Binding = new Binding("FirstName");
+            // tst.Columns.Add(textColumn);
+            //for (int i = 0; i < N; i++)
+            //{
+            //    textColumn.Binding = new Binding("A[" + i + "]");
+            //}
+            //var rowData = Enumerable.Range(0, N).ToList();
+            //tst.Items.Add(rowData);
+            int N = 2;
+            DataTable dt = new DataTable();
+            dt.Columns.Add("A", typeof(int));
+            dt.Columns.Add("B");
+            for (int i = 0; i < N; i++)
+            {
+                var row = dt.NewRow();
+                SolidColorBrush color = new SolidColorBrush(Colors.Red);
+               
+                row["A"] = i;
+                string temp = Convert.ToString(row[$@"A"]);          
+
+                row["B"] = i;
+
+                dt.Rows.Add(row);
+                //var cellInfo = tst.SelectedCells[0];
+                //var content = color;
+                //tst.RowBackground = Brushes.Red;
+                tst.Resources["A"] = Brushes.Red;
+               // tst.Columns[0].HeaderStyle = (Colors.Red);
+
+                // tst.Items.Add(i);//Строчка
+                // textColumn.Binding = new Binding(Convert.ToString(i));
+
+                //var col = new DataGridTextColumn
+                //{
+
+                //   // Header = "A",
+                //    Binding = new Binding("[" + i + "]"),
+                //    IsReadOnly = true,
+                //    Width = new DataGridLength(1, DataGridLengthUnitType.Star)
+                //};
+
+                // tst.Columns.Add(col);
+
+            }
+            tst.DataContext = dt;
+
+            // tst.Columns.Add(textColumn);
+            //var rowData = Enumerable.Range(0, N).ToList();
+            //tst.Items.Add(rowData);
+            // DataGrid tst = new DataGrid();
+            // Set AutoGenerateColumns true to generate columns as per datasource.
+            // tst.AutoGenerateColumns = true;
+            // Finally bind the datasource to datagridview.
+            //tst.DataContext = employeeData.DefaultView;
+
+
+
+            //DataGridView dgv = new DataGridView();
+            //// Set AutoGenerateColumns true to generate columns as per datasource.
+            //dgv.AutoGenerateColumns = true;
+            //// Finally bind the datasource to datagridview.
+            //dgv.DataSource = dt;
+        }
+
         private void cmbtimeFrom_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //SearchFlightsIn();
@@ -220,6 +351,43 @@ namespace ITAirOffice
         private void cmbtimeIn_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             SearchFlightsIn();
+        }
+
+        private void tst_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            DataGridRow gridRow = e.Row;
+            DataTable dt = new DataTable();
+            var row = dt.Rows;
+
+            // DataRow row = (gridRow.DataContext as DataRowView).Row;
+            DataTable DT = new DataTable();
+            //switch (row.RowState)
+            //{
+            //    case row["A"] == "1";
+            //        gridRow.Background = new SolidColorBrush(Colors.Green);
+            //        break;
+            //}           
+            //int countB = 0, countP = 0, countH = 0;
+
+            //try
+            //{
+            //    if (Convert.ToDouble(((System.Data.DataRowView)(e.Row.DataContext)).Row.ItemArray[1].ToString()) > 0)
+            //    {
+            //        e.Row.Background = new SolidColorBrush(Colors.Red);
+            //    }
+            //    else if (Convert.ToDouble(((System.Data.DataRowView)(e.Row.DataContext)).Row.ItemArray[4].ToString()) < 0)
+            //    {
+            //        e.Row.Background = new SolidColorBrush(Colors.Yellow);
+            //    }
+            //    else
+            //    {
+            //        e.Row.Background = new SolidColorBrush(Colors.WhiteSmoke);
+            //    }
+            //}
+            //catch
+            //{
+            //}
+
         }
 
         private void cmbInAir_SelectionChanged(object sender, SelectionChangedEventArgs e)

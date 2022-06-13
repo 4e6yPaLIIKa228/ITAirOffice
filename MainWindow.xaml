@@ -8,6 +8,7 @@
         Title="MainWindow" Height="450" Width="900" AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" MouseLeftButtonDown="Window_MouseLeftButtonDown" >
     <Grid>
         <DataGrid x:Name="dgInfo" Margin="0,60,0,70" Grid.Column="0" RowHeight="30" Grid.RowSpan="1"  ColumnWidth="*" CanUserAddRows="False"  AutoGenerateColumns="False" MinColumnWidth="25" RowHeaderWidth="0"  SelectionUnit="FullRow">
+           
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Номер" IsReadOnly="True"  Width="50"   Binding="{Binding ID}" FontSize="14"/>
                 <DataGridTextColumn Header="Самолет" IsReadOnly="True"  Width="100"  Binding="{Binding Model}" FontSize="14"/>
