@@ -22,13 +22,17 @@ namespace ITAirOffice
     /// </summary>
     public partial class BuyTicket : Window
     {
-        int IDcmdFrom, IDcmdIn,IDRoutes;
+        
+        int IDcmdFrom, IDcmdIn, IDRoutes, proverka=1;
+        DataTable dt = new DataTable();
         public BuyTicket()
         {
             InitializeComponent();
             LoadcmbAirFrom();
             LoadcmbAirIn();
             Check();
+            LoadDG();
+
 
         }
 
@@ -42,7 +46,7 @@ namespace ITAirOffice
         }
 
         private void LoadcmbAirFrom()
-        {            
+        {
             try
             {
                 using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
@@ -95,7 +99,7 @@ namespace ITAirOffice
             }
             else
             {
-                cmbInAir.IsEnabled = true;                              
+                cmbInAir.IsEnabled = true;
                 bool resultClass = int.TryParse(cmbFromAir.SelectedValue.ToString(), out IDcmdFrom);
                 cmbtimeIn.SelectedIndex = -1;
 
@@ -112,8 +116,8 @@ namespace ITAirOffice
                 SearchRoutes();
                 SearchFlightsFrom();
                 cmbtimeIn.SelectedIndex = -1;
-            }           
-                
+            }
+
         }
 
         public void SearchFlightsFrom()
@@ -185,6 +189,31 @@ namespace ITAirOffice
             }
         }
 
+        public void LoadDG()
+        {           
+            int N = 15;
+           
+            dt.Columns.Add("A", typeof(int));
+           // dt.Columns.Add("B");
+            for (int i = 1; i < N; i++)
+            {
+                var row = dt.NewRow();
+                SolidColorBrush color = new SolidColorBrush(Colors.Red);               
+                row["A"] = i;
+                string temp = Convert.ToString(row[$@"A"]);
+               // row["B"] = i;
+                dt.Rows.Add(row);
+            }
+            tst.DataContext = dt;
+            tst.ItemsSource = dt.DefaultView;
+            DataRowView drv = tst.Items[0] as DataRowView;
+            
+            //DataRowView drv = tst.SelectedCells[0] as DataRowView;
+
+            string aaa = drv["A"].ToString();
+            MessageBox.Show(aaa);
+        }
+
         private void cmbtimeFrom_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //SearchFlightsIn();
@@ -220,6 +249,98 @@ namespace ITAirOffice
         private void cmbtimeIn_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             SearchFlightsIn();
+        }
+
+        private void tst_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+
+            try
+            {
+                using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
+                {
+                    connection.Open();
+                    DataRowView item = e.Row.Item as DataRowView;
+                    if (item != null )
+                    {
+                        DataRow row = item.Row;                       
+                            string query = $@"SELECT NumberRow FROM Passengers 
+                                                WHERE Passengers.Row = 'A' and NumberRow = {proverka};"; //Получение данных из таблицы Девайсы
+                            SQLiteDataReader dr = null;
+                            SQLiteCommand cmd = new SQLiteCommand(query, connection);
+                            dr = cmd.ExecuteReader();
+                            string NumerRow = "0";
+                            while (dr.Read())
+                            {
+                                NumerRow = dr["NumberRow"].ToString();
+                            }
+                            tst.ItemsSource = dt.DefaultView;
+                           // DataRowView drv = tst.Items[proverka] as DataRowView;
+                            //DataRowView drv = tst.SelectedCells[0] as DataRowView;
+                            //MessageBox.Show(drv["A"].ToString());
+                             var colValue = row["A"];
+                           // string aaa = drv["A"].ToString();
+                            if (Convert.ToString(colValue) == Convert.ToString(NumerRow))
+                            {
+                                e.Row.Background = new SolidColorBrush(Colors.Red);
+                                // MessageBox.Show("YEs");
+                            }
+                            else
+                            {
+                                e.Row.Background = new SolidColorBrush(Colors.Green);
+                            }
+                        proverka++;
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+        }
+            
+
+        
+
+        private void comtest_Initialized(object sender, EventArgs e)
+        {
+            int N = 3;
+            for (int i = 1; i < N; i++)
+            {
+                cmbnumber.Items.Add(i);
+               // cmbnumber.Items.Remove(2);
+            }
+            cmbnumber.SelectedIndex = -1;
+        }
+
+        private void cmbrow_Initialized(object sender, EventArgs e)
+        {
+            cmbrow.Items.Add("A");
+            cmbrow.Items.Add("B");
+        }
+
+        private void cmbnumber_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //ComboBoxItem ComboItem = (ComboBoxItem)cmbnumber.SelectedItem;
+            //string name = ComboItem.Name;
+            //MessageBox.Show(name);
+            MessageBox.Show(cmbnumber.SelectedItem.ToString());
+        }
+
+        private void tst_Loaded(object sender, RoutedEventArgs e)
+        {
+           
+            
+        }
+
+        private void tst_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            var cellInfo = tst.SelectedCells[0];
+            var content = (cellInfo.Column.GetCellContent(cellInfo.Item) as TextBlock).Text;
+            MessageBox.Show(Convert.ToString( content));
+            cmbnumber.SelectedItem = Convert.ToInt32(content);
+            int parse = tst.SelectedIndex;
+            DataRowView rowView = tst.SelectedValue as DataRowView;
+            MessageBox.Show("Номер стрки" + Convert.ToString(parse));
         }
 
         private void cmbInAir_SelectionChanged(object sender, SelectionChangedEventArgs e)

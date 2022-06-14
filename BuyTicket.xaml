@@ -13,6 +13,15 @@
         <Label Margin="58,158,501,266" Content="price"/>
         <ComboBox x:Name="cmbtimeFrom" Margin="58,199,501,211" SelectionChanged="cmbtimeFrom_SelectionChanged"/>
         <ComboBox x:Name="cmbtimeIn" Margin="58,255,501,155" SelectionChanged="cmbtimeIn_SelectionChanged" MouseMove="cmbtimeIn_MouseMove" MouseLeftButtonDown="cmbtimeIn_MouseLeftButtonDown" PreviewMouseLeftButtonDown="cmbtimeIn_PreviewMouseLeftButtonDown"/>
-
+        <DataGrid x:Name="tst" Margin="479,97,279,68"  ItemsSource="{Binding}" AutoGenerateColumns="True"  CanUserAddRows="False" RowHeaderWidth="0" LoadingRow="tst_LoadingRow" SelectedCellsChanged="tst_SelectedCellsChanged" Loaded="tst_Loaded" >            
+            <DataGrid.Columns>
+                <!--<DataGridTextColumn  Header="A" IsReadOnly="True"  Width=""   FontSize="14"/>
+                <DataGridTextColumn  Header="B" IsReadOnly="True"  Width=""   FontSize="14"/>
+                <DataGridTextColumn  Header="C" IsReadOnly="True"  Width=""   FontSize="14"/>-->
+            </DataGrid.Columns>
+            
+        </DataGrid>
+        <ComboBox Name="cmbnumber" Margin="171,333,453,84" Initialized="comtest_Initialized" SelectionChanged="cmbnumber_SelectionChanged" />
+        <ComboBox x:Name="cmbrow" Margin="58,333,661,84" Initialized="cmbrow_Initialized"/>
     </Grid>
 </Window>
