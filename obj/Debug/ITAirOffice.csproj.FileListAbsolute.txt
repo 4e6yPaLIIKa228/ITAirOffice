@@ -81,3 +81,4 @@ C:\Users\Студент\Desktop\СИП-213\ITAirOffice-main\obj\Debug\ITAirOffic
 C:\Users\Студент\Desktop\СИП-213\ITAirOffice-main\obj\Debug\ITAirOffice.csproj.CopyComplete
 C:\Users\Студент\Desktop\СИП-213\ITAirOffice-main\obj\Debug\ITAirOffice.exe
 C:\Users\Студент\Desktop\СИП-213\ITAirOffice-main\obj\Debug\ITAirOffice.pdb
+C:\Users\Студент\Desktop\СИП-213\ITAirOffice-main\obj\Debug\ITAirOffice.csproj.AssemblyReference.cache

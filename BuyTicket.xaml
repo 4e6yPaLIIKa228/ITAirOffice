@@ -23,5 +23,6 @@
         </DataGrid>
         <ComboBox Name="cmbnumber" Margin="171,333,453,84" Initialized="comtest_Initialized" SelectionChanged="cmbnumber_SelectionChanged" />
         <ComboBox x:Name="cmbrow" Margin="58,333,661,84" Initialized="cmbrow_Initialized"/>
+        <Button x:Name="btnexit_Copy" Margin="678,81,54,331" Click="btnexit_Copy_Click" />
     </Grid>
 </Window>

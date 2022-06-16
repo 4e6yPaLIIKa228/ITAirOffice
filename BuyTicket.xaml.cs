@@ -22,8 +22,7 @@ namespace ITAirOffice
     /// </summary>
     public partial class BuyTicket : Window
     {
-        
-        int IDcmdFrom, IDcmdIn, IDRoutes, proverka=1;
+        int IDcmdFrom, IDcmdIn, IDRoutes, proverka=1, abc=1;
         DataTable dt = new DataTable();
         public BuyTicket()
         {
@@ -32,8 +31,13 @@ namespace ITAirOffice
             LoadcmbAirIn();
             Check();
             LoadDG();
+           
 
+        }
 
+        private void Btnexit_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -116,6 +120,7 @@ namespace ITAirOffice
                 SearchRoutes();
                 SearchFlightsFrom();
                 cmbtimeIn.SelectedIndex = -1;
+                //Test();
             }
 
         }
@@ -244,6 +249,7 @@ namespace ITAirOffice
         private void cmbtimeIn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             MessageBox.Show("");
+           
         }
 
         private void cmbtimeIn_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -251,54 +257,67 @@ namespace ITAirOffice
             SearchFlightsIn();
         }
 
-        private void tst_LoadingRow(object sender, DataGridRowEventArgs e)
+        private void tst_LoadingRow(object sender, DataGridRowEventArgs f)
         {
+             
 
-            try
-            {
-                using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
-                {
-                    connection.Open();
-                    DataRowView item = e.Row.Item as DataRowView;
-                    if (item != null )
-                    {
-                        DataRow row = item.Row;                       
-                            string query = $@"SELECT NumberRow FROM Passengers 
-                                                WHERE Passengers.Row = 'A' and NumberRow = {proverka};"; //Получение данных из таблицы Девайсы
-                            SQLiteDataReader dr = null;
-                            SQLiteCommand cmd = new SQLiteCommand(query, connection);
-                            dr = cmd.ExecuteReader();
-                            string NumerRow = "0";
-                            while (dr.Read())
-                            {
-                                NumerRow = dr["NumberRow"].ToString();
-                            }
-                            tst.ItemsSource = dt.DefaultView;
-                           // DataRowView drv = tst.Items[proverka] as DataRowView;
-                            //DataRowView drv = tst.SelectedCells[0] as DataRowView;
-                            //MessageBox.Show(drv["A"].ToString());
-                             var colValue = row["A"];
-                           // string aaa = drv["A"].ToString();
-                            if (Convert.ToString(colValue) == Convert.ToString(NumerRow))
-                            {
-                                e.Row.Background = new SolidColorBrush(Colors.Red);
-                                // MessageBox.Show("YEs");
-                            }
-                            else
-                            {
-                                e.Row.Background = new SolidColorBrush(Colors.Green);
-                            }
-                        proverka++;
-                    }
-                }
-            }
-            catch
-            {
+            //try
+            //{
+            //    using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
+            //    {
 
-            }
+            //        DataRowView item = f.Row.Item as DataRowView;
+            //        if (item != null )
+            //        {
+            //            connection.Open();
+            //            DataRow row = item.Row;                       
+            //                string query = $@"SELECT NumberRow FROM Passengers 
+            //                                    WHERE Passengers.Row = 'A' and NumberRow = {proverka};"; //Получение данных из таблицы Девайсы
+            //                SQLiteDataReader dr = null;
+            //                SQLiteCommand cmd = new SQLiteCommand(query, connection);
+            //                dr = cmd.ExecuteReader();
+            //                string NumerRow = "0";
+            //                while (dr.Read())
+            //                {
+            //                    NumerRow = dr["NumberRow"].ToString();
+            //                }
+            //                tst.ItemsSource = dt.DefaultView;
+            //               // DataRowView drv = tst.Items[proverka] as DataRowView;
+            //                //DataRowView drv = tst.SelectedCells[0] as DataRowView;
+            //                //MessageBox.Show(drv["A"].ToString());
+            //                 var colValue = row["A"];
+            //               // string aaa = drv["A"].ToString();
+            //                if (Convert.ToString(colValue) == Convert.ToString(NumerRow))
+            //                {
+            //                    f.Row.Background = new SolidColorBrush(Colors.Red);
+            //                    // MessageBox.Show("YEs");
+            //                }
+            //                else
+            //                {
+            //                    f.Row.Background = new SolidColorBrush(Colors.Green);
+            //                }
+            //            proverka++;
+            //        }
+
+            //        connection.Close();
+            //    }
+            //}
+            //catch
+            //{
+
+            //}
         }
-            
 
+        public void Test()
+        {
+            // ((Border)this.Template.FindName("tst_LoadingRow", this)).MouseDown += Window_MouseLeftButtonDown;
+            // btnexit_Copy.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            abc = 4;
+            //btnexit_Copy.Click += new RoutedEventHandler(tst_LoadingRow);
+            //Loaded += tst_LoadingRow;
+            // img.MouseUp += new MouseButtonEventHandler(img_MouseUp);
+
+        }
         
 
         private void comtest_Initialized(object sender, EventArgs e)
@@ -331,6 +350,18 @@ namespace ITAirOffice
            
             
         }
+       
+        // public event RoutedEventHandler btnexit_Cop;
+        public void btnexit_Copy_Click(object sender, RoutedEventArgs e)
+        {
+                      //  this.btnSelectMusicFile_Click(this.btnPlayStop, new RoutedEventArgs());
+            // Test();
+            // btnexit_Copy.MouseUp += new RoutedEventArgs(tst_LoadingRow);
+            // DataRowView item = f.Row.Item as DataRowView;
+            // if (btnexit_Copy != null) tst_LoadingRow(sender, f);
+            //btnexit_Copy.Click += new EventHandler(btnexit_Copy);
+            // btnexit_Copy.Click += new RoutedEventArgs((RoutedEvent), e);
+        }
 
         private void tst_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
@@ -341,6 +372,11 @@ namespace ITAirOffice
             int parse = tst.SelectedIndex;
             DataRowView rowView = tst.SelectedValue as DataRowView;
             MessageBox.Show("Номер стрки" + Convert.ToString(parse));
+        }
+
+        private static void OnLoadingNumberRow(DataGrid dGrid, DataGridRow row)
+        {
+          
         }
 
         private void cmbInAir_SelectionChanged(object sender, SelectionChangedEventArgs e)
