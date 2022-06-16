@@ -23,15 +23,14 @@ namespace ITAirOffice
     public partial class BuyTicket : Window
     {
         int IDcmdFrom, IDcmdIn, IDRoutes, proverka=1, abc=1;
+        string STimeFr = null, IdPlane = null;
         DataTable dt = new DataTable();
         public BuyTicket()
         {
             InitializeComponent();
             LoadcmbAirFrom();
             LoadcmbAirIn();
-            Check();
-            LoadDG();
-           
+            Check(); 
 
         }
 
@@ -154,8 +153,8 @@ namespace ITAirOffice
                 using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
                 {
                     connection.Open();
-                    String s = cmbtimeFrom.Text;
-                    string query = $@"SELECT TimeIn FROM Flights WHERE IDRoute = {IDRoutes} and TimeFrom = '{s}' ";
+                    STimeFr = cmbtimeFrom.Text;
+                    string query = $@"SELECT TimeIn FROM Flights WHERE IDRoute = {IDRoutes} and TimeFrom = '{STimeFr}' ";
                     SQLiteCommand cmd = new SQLiteCommand(query, connection);
                     SQLiteDataAdapter SDA = new SQLiteDataAdapter(cmd);
                     DataTable dt = new DataTable("Flights");
@@ -195,28 +194,64 @@ namespace ITAirOffice
         }
 
         public void LoadDG()
-        {           
-            int N = 15;
-           
-            dt.Columns.Add("A", typeof(int));
-           // dt.Columns.Add("B");
-            for (int i = 1; i < N; i++)
+        {
+            try
             {
-                var row = dt.NewRow();
-                SolidColorBrush color = new SolidColorBrush(Colors.Red);               
-                row["A"] = i;
-                string temp = Convert.ToString(row[$@"A"]);
-               // row["B"] = i;
-                dt.Rows.Add(row);
-            }
-            tst.DataContext = dt;
-            tst.ItemsSource = dt.DefaultView;
-            DataRowView drv = tst.Items[0] as DataRowView;
-            
-            //DataRowView drv = tst.SelectedCells[0] as DataRowView;
+                using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
+                {
 
-            string aaa = drv["A"].ToString();
-            MessageBox.Show(aaa);
+                    connection.Open();
+                    string query = $@"SELECT IDPlane FROM Flights WHERE IDRoute = {IDRoutes} and TimeFrom = '{STimeFr}' ";
+                    SQLiteCommand cmd = new SQLiteCommand(query, connection);
+                    SQLiteDataAdapter SDA = new SQLiteDataAdapter(cmd);
+                    SQLiteDataReader dr = null;
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        IdPlane = dr["IDPlane"].ToString();
+                    }
+                    query = $@"SELECT NumberSeats,NumberRows FROM Planes WHERE ID = {IdPlane}";
+                    cmd  = new SQLiteCommand(query, connection);
+                    SDA  = new SQLiteDataAdapter(cmd);
+                    dr = null;
+                    dr = cmd.ExecuteReader();
+                    string NumberSeats = null, NumberRows = null; //1)колл в ряду 2) колл рядов
+                    while (dr.Read())
+                    {
+                        NumberSeats = dr["NumberSeats"].ToString();
+                        NumberRows = dr["NumberRows"].ToString();
+                    }
+
+                    dt.Columns.Clear();
+                    dt.Clear();
+                    tst.ItemsSource = null;
+                    proverka = 1;
+                    // string FRows = cmbrow.Text;
+                    string FRows = cmbrow.Items.GetItemAt(cmbrow.SelectedIndex).ToString();
+                    dt.Columns.Add($@"{FRows}", typeof(int));
+                    // dt.Columns.Add("B");
+                   
+                    for (int i = 1; i <= Convert.ToInt32(NumberSeats); i++)
+                    {
+                        var row = dt.NewRow();
+                        //SolidColorBrush color = new SolidColorBrush(Colors.Red);
+                        row[$@"{FRows}"] = i;
+                        string temp = Convert.ToString(row[$@"{FRows}"]);
+                        // row["B"] = i;
+                        dt.Rows.Add(row);
+                    }
+                    tst.DataContext = dt;
+                    tst.ItemsSource = dt.DefaultView;
+                    DataRowView drv = tst.Items[0] as DataRowView;
+                    string aaa = drv[$@"{FRows}"].ToString();
+                 //   MessageBox.Show(aaa);
+                    connection.Close();
+                }
+            }
+            catch
+            {
+
+            }
         }
 
         private void cmbtimeFrom_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -231,25 +266,14 @@ namespace ITAirOffice
 
         private void cmbtimeIn_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-           // Check();
-           // SearchFlightsIn();
-        }
-
-        private void cmbtimeFrom_MouseMove(object sender, MouseEventArgs e)
-        {
-           // MessageBox.Show("");
-            //SearchFlightsIn();
-        }
-
-        private void cmbtimeIn_MouseMove(object sender, MouseEventArgs e)
-        {
-           // SearchFlightsIn();
+            // Check();
+            // SearchFlightsIn();           
         }
 
         private void cmbtimeIn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            MessageBox.Show("");
-           
+          //  MessageBox.Show("");
+          //dell           
         }
 
         private void cmbtimeIn_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -259,108 +283,160 @@ namespace ITAirOffice
 
         private void tst_LoadingRow(object sender, DataGridRowEventArgs f)
         {
-             
+            try
+            {
+                using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
+                {
+                    f.Row.Background = new SolidColorBrush(Colors.White);
+                    DataRowView item = f.Row.Item as DataRowView;
+                    if (item != null)
+                    {
+                        connection.Open();
+                        DataRow row = item.Row;
+                        string FRows = cmbrow.Items.GetItemAt(cmbrow.SelectedIndex).ToString();
+                        string query = $@"SELECT NumberRow FROM Passengers 
+                                                WHERE Passengers.Row = '{FRows}' and NumberRow = {proverka};"; //
+                        SQLiteDataReader dr = null;
+                        SQLiteCommand cmd = new SQLiteCommand(query, connection);
+                        dr = cmd.ExecuteReader();
+                        string NumerRow = null;
+                        while (dr.Read())
+                        {
+                            NumerRow = dr["NumberRow"].ToString();
+                        }
+                        tst.ItemsSource = dt.DefaultView;
+                        var colValue = row[$@"{FRows}"];
+                        if (Convert.ToString(colValue) == Convert.ToString(NumerRow))
+                        {
+                            f.Row.Background = new SolidColorBrush(Colors.Red);
+                        }
+                        else
+                        {
+                            f.Row.Background = new SolidColorBrush(Colors.Green);
+                        }
+                        proverka++;
+                    }
+                    else
+                    {
+                        
+                    }
+                    connection.Close();
+                }
+            }
+            catch
+            {
 
-            //try
-            //{
-            //    using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
-            //    {
-
-            //        DataRowView item = f.Row.Item as DataRowView;
-            //        if (item != null )
-            //        {
-            //            connection.Open();
-            //            DataRow row = item.Row;                       
-            //                string query = $@"SELECT NumberRow FROM Passengers 
-            //                                    WHERE Passengers.Row = 'A' and NumberRow = {proverka};"; //Получение данных из таблицы Девайсы
-            //                SQLiteDataReader dr = null;
-            //                SQLiteCommand cmd = new SQLiteCommand(query, connection);
-            //                dr = cmd.ExecuteReader();
-            //                string NumerRow = "0";
-            //                while (dr.Read())
-            //                {
-            //                    NumerRow = dr["NumberRow"].ToString();
-            //                }
-            //                tst.ItemsSource = dt.DefaultView;
-            //               // DataRowView drv = tst.Items[proverka] as DataRowView;
-            //                //DataRowView drv = tst.SelectedCells[0] as DataRowView;
-            //                //MessageBox.Show(drv["A"].ToString());
-            //                 var colValue = row["A"];
-            //               // string aaa = drv["A"].ToString();
-            //                if (Convert.ToString(colValue) == Convert.ToString(NumerRow))
-            //                {
-            //                    f.Row.Background = new SolidColorBrush(Colors.Red);
-            //                    // MessageBox.Show("YEs");
-            //                }
-            //                else
-            //                {
-            //                    f.Row.Background = new SolidColorBrush(Colors.Green);
-            //                }
-            //            proverka++;
-            //        }
-
-            //        connection.Close();
-            //    }
-            //}
-            //catch
-            //{
-
-            //}
-        }
-
-        public void Test()
-        {
-            // ((Border)this.Template.FindName("tst_LoadingRow", this)).MouseDown += Window_MouseLeftButtonDown;
-            // btnexit_Copy.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-            abc = 4;
-            //btnexit_Copy.Click += new RoutedEventHandler(tst_LoadingRow);
-            //Loaded += tst_LoadingRow;
-            // img.MouseUp += new MouseButtonEventHandler(img_MouseUp);
-
+            }
         }
         
-
-        private void comtest_Initialized(object sender, EventArgs e)
+        public void LoadSeatsInComb()
         {
-            int N = 3;
-            for (int i = 1; i < N; i++)
+            try
             {
-                cmbnumber.Items.Add(i);
-               // cmbnumber.Items.Remove(2);
+                using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
+                {
+                    cmbnumber.Items.Clear();
+                    connection.Open();
+                    string query = $@"SELECT IDPlane FROM Flights WHERE IDRoute = {IDRoutes} and TimeFrom = '{STimeFr}' ";
+                    SQLiteCommand cmd = new SQLiteCommand(query, connection);
+                    SQLiteDataAdapter SDA = new SQLiteDataAdapter(cmd);
+                    SQLiteDataReader dr = null;
+                    dr = cmd.ExecuteReader();                    
+                    while (dr.Read())
+                    {
+                        IdPlane = dr["IDPlane"].ToString();
+                    }
+                    query = $@"SELECT NumberSeats,NumberRows FROM Planes WHERE ID = {IdPlane}";
+                    cmd = new SQLiteCommand(query, connection);
+                    SDA = new SQLiteDataAdapter(cmd);
+                    dr = null;
+                    dr = cmd.ExecuteReader();
+                    string NumberSeats = null, NumberRows = null; //1)колл в ряду 2) колл рядов
+                    while (dr.Read())
+                    {
+                        NumberSeats = dr["NumberSeats"].ToString();
+                        NumberRows = dr["NumberRows"].ToString();
+                    }
+                    string FRows = cmbrow.Text;
+                    for (int i = 1; i<= Convert.ToInt32(NumberSeats); i++)
+                    {
+                        query = $@"SELECT NumberRow FROM Passengers WHERE Passengers.Row = '{FRows}' and NumberRow = {i};"; //
+                        cmd = new SQLiteCommand(query, connection);
+                        SDA = new SQLiteDataAdapter(cmd);
+                        dr = null;
+                        dr = cmd.ExecuteReader();
+                        string NumerRow = "0";
+                        while (dr.Read())
+                        {
+                            NumerRow = dr["NumberRow"].ToString();
+                        }
+                        if (i != Convert.ToInt32(NumerRow))
+                        {
+                            cmbnumber.Items.Add(i);
+                        }
+                        // cmbnumber.Items.Remove(2);
+                    }
+                    cmbnumber.SelectedIndex = -1;
+                    connection.Close();
+                }
             }
-            cmbnumber.SelectedIndex = -1;
+            catch
+            {
+
+            }
         }
 
-        private void cmbrow_Initialized(object sender, EventArgs e)
-        {
-            cmbrow.Items.Add("A");
-            cmbrow.Items.Add("B");
-        }
 
         private void cmbnumber_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //ComboBoxItem ComboItem = (ComboBoxItem)cmbnumber.SelectedItem;
             //string name = ComboItem.Name;
             //MessageBox.Show(name);
-            MessageBox.Show(cmbnumber.SelectedItem.ToString());
-        }
-
-        private void tst_Loaded(object sender, RoutedEventArgs e)
-        {
-           
-            
+           // MessageBox.Show(cmbnumber.SelectedItem.ToString());
+           //dell
         }
        
         // public event RoutedEventHandler btnexit_Cop;
         public void btnexit_Copy_Click(object sender, RoutedEventArgs e)
         {
-                      //  this.btnSelectMusicFile_Click(this.btnPlayStop, new RoutedEventArgs());
+            LoadDG();
+            //  this.btnSelectMusicFile_Click(this.btnPlayStop, new RoutedEventArgs());
             // Test();
             // btnexit_Copy.MouseUp += new RoutedEventArgs(tst_LoadingRow);
             // DataRowView item = f.Row.Item as DataRowView;
             // if (btnexit_Copy != null) tst_LoadingRow(sender, f);
             //btnexit_Copy.Click += new EventHandler(btnexit_Copy);
             // btnexit_Copy.Click += new RoutedEventArgs((RoutedEvent), e);
+        }
+
+        private void cmbrow_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //dell
+            //ComboBoxItem ComboItem = (ComboBoxItem)cmbrow.SelectedItem;
+            //string name = ComboItem.Name;
+            //MessageBox.Show(name);
+            //string name = cmbrow.SelectionBoxItem.ToString();
+            //MessageBox.Show(name);
+           // string s = cmbrow.Items.GetItemAt(cmbrow.SelectedIndex).ToString();
+           // MessageBox.Show(s);
+            LoadDG();
+            cmbnumber.SelectedIndex = - 1;
+        }
+
+        private void cmbrow_Loaded(object sender, RoutedEventArgs e)
+        {
+            cmbrow.Items.Add("A");
+            cmbrow.Items.Add("B");
+        }
+
+        private void cmbrow_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+           // LoadDG();
+        }
+
+        private void cmbnumber_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            LoadSeatsInComb();            
         }
 
         private void tst_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)

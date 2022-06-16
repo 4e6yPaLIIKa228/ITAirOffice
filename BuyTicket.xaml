@@ -7,13 +7,13 @@
         mc:Ignorable="d"
         Title="BuyTicket" Height="450" Width="800" AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" MouseLeftButtonDown="Window_MouseLeftButtonDown" >
     <Grid>
-        <ComboBox x:Name="cmbFromAir" Margin="58,43,501,367" SelectionChanged="cmbFromAir_SelectionChanged"/>
-        <ComboBox x:Name="cmbInAir" Margin="58,97,401,306" SelectionChanged="cmbInAir_SelectionChanged"/>
+        <ComboBox x:Name="cmbFromAir" Margin="101,39,509,382" SelectionChanged="cmbFromAir_SelectionChanged"/>
+        <ComboBox x:Name="cmbInAir" Margin="101,81,509,339" SelectionChanged="cmbInAir_SelectionChanged"/>
         <Button x:Name="btnexit" Margin="678,10,54,402" Click="btnexit_Click" />
-        <Label Margin="58,158,501,266" Content="price"/>
-        <ComboBox x:Name="cmbtimeFrom" Margin="58,199,501,211" SelectionChanged="cmbtimeFrom_SelectionChanged"/>
-        <ComboBox x:Name="cmbtimeIn" Margin="58,255,501,155" SelectionChanged="cmbtimeIn_SelectionChanged" MouseMove="cmbtimeIn_MouseMove" MouseLeftButtonDown="cmbtimeIn_MouseLeftButtonDown" PreviewMouseLeftButtonDown="cmbtimeIn_PreviewMouseLeftButtonDown"/>
-        <DataGrid x:Name="tst" Margin="479,97,279,68"  ItemsSource="{Binding}" AutoGenerateColumns="True"  CanUserAddRows="False" RowHeaderWidth="0" LoadingRow="tst_LoadingRow" SelectedCellsChanged="tst_SelectedCellsChanged" Loaded="tst_Loaded" >            
+        <Label Margin="21,39,722,382" Content="Вылет"/>
+        <ComboBox x:Name="cmbtimeFrom" Margin="101,123,509,298" SelectionChanged="cmbtimeFrom_SelectionChanged"/>
+        <ComboBox x:Name="cmbtimeIn" Margin="101,164,509,257" SelectionChanged="cmbtimeIn_SelectionChanged" MouseLeftButtonDown="cmbtimeIn_MouseLeftButtonDown" PreviewMouseLeftButtonDown="cmbtimeIn_PreviewMouseLeftButtonDown"/>
+        <DataGrid x:Name="tst" Margin="270,251,412,10"  ItemsSource="{Binding}" AutoGenerateColumns="True"  CanUserAddRows="False" RowHeaderWidth="0" LoadingRow="tst_LoadingRow" SelectedCellsChanged="tst_SelectedCellsChanged" >            
             <DataGrid.Columns>
                 <!--<DataGridTextColumn  Header="A" IsReadOnly="True"  Width=""   FontSize="14"/>
                 <DataGridTextColumn  Header="B" IsReadOnly="True"  Width=""   FontSize="14"/>
@@ -21,8 +21,13 @@
             </DataGrid.Columns>
             
         </DataGrid>
-        <ComboBox Name="cmbnumber" Margin="171,333,453,84" Initialized="comtest_Initialized" SelectionChanged="cmbnumber_SelectionChanged" />
-        <ComboBox x:Name="cmbrow" Margin="58,333,661,84" Initialized="cmbrow_Initialized"/>
+        <ComboBox Name="cmbnumber" Margin="63,293,547,128" SelectionChanged="cmbnumber_SelectionChanged" PreviewMouseLeftButtonDown="cmbnumber_PreviewMouseLeftButtonDown" />
+        <ComboBox x:Name="cmbrow" Margin="63,259,647,162" SelectionChanged="cmbrow_SelectionChanged" Loaded="cmbrow_Loaded" PreviewMouseLeftButtonDown="cmbrow_PreviewMouseLeftButtonDown"/>
         <Button x:Name="btnexit_Copy" Margin="678,81,54,331" Click="btnexit_Copy_Click" />
+        <Label Margin="21,82,721,339" Content="Прилет"/>
+        <Label Margin="10,123,699,298" Content="Время вылета"/>
+        <Label Margin="7,164,699,257" Content="Время прилета"/>
+        <Label Margin="10,259,759,162" Content="Ряд"/>
+        <Label Margin="10,293,742,124" Content="Место"/>
     </Grid>
 </Window>
