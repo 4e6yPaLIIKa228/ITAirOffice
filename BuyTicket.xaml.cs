@@ -266,9 +266,32 @@ namespace ITAirOffice
 
         private void cmbtimeIn_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Check();
-            // SearchFlightsIn();           
-        }
+            try
+            {
+                using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
+                {
+
+                    connection.Open();
+                    string query = $@"SELECT Price FROM Routes WHERE ID = {IDRoutes}";
+                    SQLiteCommand cmd = new SQLiteCommand(query, connection);
+                    SQLiteDataAdapter SDA = new SQLiteDataAdapter(cmd);
+                    SQLiteDataReader dr = null;
+                    string Money = null;
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        Money = dr["Price"].ToString();
+                    }
+                    lblmoney.Content = Money;
+
+                }
+            }
+            catch
+            {
+
+            }                   // Check();
+                    // SearchFlightsIn();           
+       }
 
         private void cmbtimeIn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
