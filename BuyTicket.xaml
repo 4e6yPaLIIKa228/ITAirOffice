@@ -9,11 +9,11 @@
     <Grid>
         <ComboBox x:Name="cmbFromAir" Margin="101,39,509,382" SelectionChanged="cmbFromAir_SelectionChanged"/>
         <ComboBox x:Name="cmbInAir" Margin="101,81,509,339" SelectionChanged="cmbInAir_SelectionChanged"/>
-        <Button x:Name="btnexit" Margin="550,352,182,60" Click="btnexit_Click" />
+        <Button x:Name="btnexit" Content="Выход" Margin="722,10,10,402" Click="btnexit_Click" />
         <Label Margin="7,39,722,382" Content="Вылет"/>
         <ComboBox x:Name="cmbtimeFrom" Margin="101,123,509,298" SelectionChanged="cmbtimeFrom_SelectionChanged"/>
-        <ComboBox x:Name="cmbtimeIn" Margin="101,164,509,257" SelectionChanged="cmbtimeIn_SelectionChanged" MouseLeftButtonDown="cmbtimeIn_MouseLeftButtonDown" PreviewMouseLeftButtonDown="cmbtimeIn_PreviewMouseLeftButtonDown"/>
-        <DataGrid x:Name="tst" Margin="653,22,29,199"  ItemsSource="{Binding}" AutoGenerateColumns="True"  CanUserAddRows="False" RowHeaderWidth="0" LoadingRow="tst_LoadingRow" SelectedCellsChanged="tst_SelectedCellsChanged" >
+        <ComboBox x:Name="cmbtimeIn" Margin="101,164,509,257" SelectionChanged="cmbtimeIn_SelectionChanged"/>
+        <DataGrid x:Name="tst" Margin="660,81,22,140"  ItemsSource="{Binding}" AutoGenerateColumns="True"  CanUserAddRows="False" RowHeaderWidth="0" LoadingRow="tst_LoadingRow" SelectedCellsChanged="tst_SelectedCellsChanged" >
             <DataGrid.Columns>
                 <!--<DataGridTextColumn  Header="A" IsReadOnly="True"  Width=""   FontSize="14"/>
                 <DataGridTextColumn  Header="B" IsReadOnly="True"  Width=""   FontSize="14"/>
@@ -21,28 +21,38 @@
             </DataGrid.Columns>
 
         </DataGrid>
-        <ComboBox Name="cmbnumber" Margin="344,82,266,338" SelectionChanged="cmbnumber_SelectionChanged" PreviewMouseLeftButtonDown="cmbnumber_PreviewMouseLeftButtonDown" />
+        <ComboBox Name="cmbnumber" Margin="344,82,366,338" SelectionChanged="cmbnumber_SelectionChanged" PreviewMouseLeftButtonDown="cmbnumber_PreviewMouseLeftButtonDown" />
         <ComboBox x:Name="cmbrow" Margin="344,39,366,382" SelectionChanged="cmbrow_SelectionChanged" Loaded="cmbrow_Loaded" PreviewMouseLeftButtonDown="cmbrow_PreviewMouseLeftButtonDown"/>
-        <Button x:Name="btnexit_Copy" Margin="688,352,44,60" Click="btnexit_Copy_Click" />
+        <Button x:Name="btnback" Content="Назад" Margin="636,10,96,402" Click="btnback_Click" />
         <Label Margin="7,82,721,339" Content="Прилет"/>
         <Label Margin="7,123,699,298" Content="Время вылета"/>
         <Label Margin="7,164,699,257" Content="Время прилета"/>
         <Label Margin="298,39,471,382" Content="Ряд"/>
         <Label Margin="296,82,456,339" Content="Место"/>
-        <TextBox HorizontalAlignment="Left" Height="29" Margin="101,222,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="228"/>
-        <Label Margin="10,222,704,199" Content="Фамилия"/>
-        <TextBox HorizontalAlignment="Left" Height="29" Margin="101,256,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="228"/>
-        <Label Margin="10,256,704,165" Content="Имя"/>
-        <TextBox HorizontalAlignment="Left" Height="29" Margin="101,290,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="228"/>
-        <Label Margin="10,290,704,131" Content="Отчество"/>
-        <Button x:Name="btnexit_Copy1" Content="Оформить" Margin="296,389,376,23" Click="btnexit_Copy_Click" />
-        <Label Margin="10,334,733,87" Content="Цена"/>
-        <Label x:Name="lblmoney" Margin="96,334,476,87" Content="Стоимость"/>
-        <TextBox HorizontalAlignment="Left" Height="29" Margin="437,290,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="167"/>
-        <TextBox HorizontalAlignment="Left" Height="29" Margin="437,222,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="167"/>
+        <TextBox x:Name="txtFam" HorizontalAlignment="Left" Height="29" Margin="101,234,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="190"   PreviewTextInput="txtFam_PreviewTextInput"/>
+        <Label Margin="7,234,707,187" Content="Фамилия"/>
+        <TextBox x:Name="txtName" HorizontalAlignment="Left" Height="29" Margin="101,268,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="190" PreviewTextInput="txtName_PreviewTextInput"/>
+        <Label Margin="7,268,707,153" Content="Имя"/>
+        <TextBox x:Name="txtOtchec" HorizontalAlignment="Left" Height="29" Margin="101,302,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="190" PreviewTextInput="txtOtchec_PreviewTextInput"/>
+        <Label Margin="7,302,707,119" Content="Отчество"/>
+        <Button x:Name="btnbuybillet" Content="Оформить" Margin="296,389,376,23" Click="btnbuybillet_Click" />
+        <Label Margin="7,346,736,75" Content="Цена"/>
+        <Label x:Name="lblmoney" Margin="96,346,509,75" Content="Стоимость" Visibility="Hidden"/>
+        <TextBox x:Name="txtserpass" HorizontalAlignment="Left" Height="29" Margin="437,290,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="167" PreviewTextInput="txtserpass_PreviewTextInput" MaxLength="8" UndoLimit="8"/>
+        <TextBox x:Name="txtnumberpass" HorizontalAlignment="Left" Height="29" Margin="437,222,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="167" PreviewTextInput="txtnumberpass_PreviewTextInput" MaxLength="4" UndoLimit="4"/>
         <Label Margin="334,222,363,199" Content="Номер паспорта"/>
         <Label Margin="334,290,363,131" Content="Серия паспорта"/>
-        <DatePicker Margin="344,123,266,298"/>
+        <DatePicker Name="dtDate" Margin="101,198,509,223" Focusable = "False" SelectedDateChanged="dtDate_SelectedDateChanged" >
+            <!--<DatePicker.Background>
+                <ImageBrush ImageSource="image1649044807045.jpg" Opacity="0.3" />
+            </DatePicker.Background>-->
+        </DatePicker>
+        
+           
+            
+
+        <Label Margin="7,198,707,223" Content="Дата"/>
+        <Label x:Name="lblDate" Margin="461,39,182,382" Content="Цена"/>
 
     </Grid>
 </Window>

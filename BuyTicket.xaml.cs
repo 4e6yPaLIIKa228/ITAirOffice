@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,21 +23,16 @@ namespace ITAirOffice
     /// </summary>
     public partial class BuyTicket : Window
     {
-        int IDcmdFrom, IDcmdIn, IDRoutes, proverka=1, abc=1;
-        string STimeFr = null, IdPlane = null;
+        int IDcmdFrom, IDcmdIn, IDRoutes, IDFlights, proverka=1, abc=1;
+        string STimeFr = null, CmbTimeIn = null, IdPlane = null, DateInPicker=null, Money=null;
         DataTable dt = new DataTable();
         public BuyTicket()
         {
             InitializeComponent();
             LoadcmbAirFrom();
-            LoadcmbAirIn();
-            Check(); 
-
-        }
-
-        private void Btnexit_Copy_Click(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
+            Check();
+            MyViewModel();
+            TimeLoad();
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -96,32 +92,38 @@ namespace ITAirOffice
 
         public void Check()
         {
+
             if (cmbFromAir.SelectedIndex == -1)
             {
                 cmbInAir.IsEnabled = false;
-            }
-            else
-            {
-                cmbInAir.IsEnabled = true;
-                bool resultClass = int.TryParse(cmbFromAir.SelectedValue.ToString(), out IDcmdFrom);
-                cmbtimeIn.SelectedIndex = -1;
-
-            }
-            if (cmbInAir.SelectedIndex == -1)
-            {
+                cmbrow.IsEnabled = false;
+                cmbnumber.IsEnabled = false;
+                dtDate.IsEnabled = false;
                 cmbtimeFrom.IsEnabled = false;
                 cmbtimeIn.IsEnabled = false;
             }
             else
             {
-                cmbtimeFrom.IsEnabled = true;
-                bool resultClass = int.TryParse(cmbFromAir.SelectedValue.ToString(), out IDcmdIn);
-                SearchRoutes();
-                SearchFlightsFrom();
-                cmbtimeIn.SelectedIndex = -1;
-                //Test();
-            }
+                cmbInAir.IsEnabled = true;
+                bool resultClass = int.TryParse(cmbFromAir.SelectedValue.ToString(), out IDcmdFrom);
+               cmbtimeIn.SelectedIndex = -1;
 
+            }
+            if (cmbInAir.SelectedIndex != -1 && cmbFromAir.SelectedIndex != -1)            
+            {
+                cmbtimeFrom.IsEnabled = true;
+                bool resultClass = int.TryParse(cmbInAir.SelectedValue.ToString(), out IDcmdIn);               
+                cmbtimeIn.SelectedIndex = -1;             
+            }
+            if (cmbtimeFrom.SelectedIndex != -1 && cmbInAir.SelectedIndex != -1 && cmbFromAir.SelectedIndex != -1)
+            {
+                cmbtimeIn.IsEnabled = true;
+           
+            }
+            if (cmbtimeIn.SelectedIndex != -1)
+            {
+                dtDate.IsEnabled = true;
+            }
         }
 
         public void SearchFlightsFrom()
@@ -131,6 +133,7 @@ namespace ITAirOffice
                 using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
                 {
                     connection.Open();
+                    SearchRoutes();
                     string query = $@"SELECT TimeFrom FROM Flights WHERE IDRoute = {IDRoutes}";
                     SQLiteCommand cmd = new SQLiteCommand(query, connection);
                     SQLiteDataAdapter SDA = new SQLiteDataAdapter(cmd);
@@ -138,7 +141,7 @@ namespace ITAirOffice
                     SDA.Fill(dt);
                     cmbtimeFrom.ItemsSource = dt.DefaultView;
                     cmbtimeFrom.DisplayMemberPath = "TimeFrom";
-                    cmbInAir.SelectedValuePath = "ID";
+                    cmbtimeFrom.SelectedValuePath = "ID";
                 }
             }
             catch (Exception ex)
@@ -152,8 +155,7 @@ namespace ITAirOffice
             {
                 using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
                 {
-                    connection.Open();
-                    STimeFr = cmbtimeFrom.Text;
+                    connection.Open();                   
                     string query = $@"SELECT TimeIn FROM Flights WHERE IDRoute = {IDRoutes} and TimeFrom = '{STimeFr}' ";
                     SQLiteCommand cmd = new SQLiteCommand(query, connection);
                     SQLiteDataAdapter SDA = new SQLiteDataAdapter(cmd);
@@ -161,7 +163,7 @@ namespace ITAirOffice
                     SDA.Fill(dt);
                     cmbtimeIn.ItemsSource = dt.DefaultView;
                     cmbtimeIn.DisplayMemberPath = "TimeIn";
-                    //cmbInAir.SelectedValuePath = "ID";
+                    cmbtimeIn.SelectedValuePath = "ID";
                 }
             }
             catch (Exception ex)
@@ -180,10 +182,16 @@ namespace ITAirOffice
                     string query = $@"SELECT ID From Routes WHERE IDAirFrom = {IDcmdFrom} and IDAirIn = {IDcmdIn}";
                     SQLiteCommand cmd = new SQLiteCommand(query, connection);
                     SQLiteDataReader dr = null;
+                    int proverka = 0;
                     dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
                         IDRoutes = Convert.ToInt32(dr["ID"].ToString());
+                        proverka = 1;
+                    }
+                    if (proverka == 0)
+                    {
+                        IDRoutes = 0;
                     }
                 }
             }
@@ -201,7 +209,7 @@ namespace ITAirOffice
                 {
 
                     connection.Open();
-                    string query = $@"SELECT IDPlane FROM Flights WHERE IDRoute = {IDRoutes} and TimeFrom = '{STimeFr}' ";
+                    string query = $@"SELECT IDPlane FROM Flights WHERE IDRoute = {IDRoutes} and TimeFrom = '{STimeFr}' and TimeIn = '{CmbTimeIn}'";
                     SQLiteCommand cmd = new SQLiteCommand(query, connection);
                     SQLiteDataAdapter SDA = new SQLiteDataAdapter(cmd);
                     SQLiteDataReader dr = null;
@@ -226,16 +234,22 @@ namespace ITAirOffice
                     dt.Clear();
                     tst.ItemsSource = null;
                     proverka = 1;
-                    // string FRows = cmbrow.Text;
-                    string FRows = cmbrow.Items.GetItemAt(cmbrow.SelectedIndex).ToString();
+                    string FRows;
+                    if (cmbrow.SelectedItem == null)
+                    {
+                        FRows = "A";
+                    }
+                    else
+                    {
+                        FRows = cmbrow.Items.GetItemAt(cmbrow.SelectedIndex).ToString();
+                    }
                     dt.Columns.Add($@"{FRows}", typeof(int));
                     // dt.Columns.Add("B");
                    
                     for (int i = 1; i <= Convert.ToInt32(NumberSeats); i++)
                     {
                         var row = dt.NewRow();
-                        //SolidColorBrush color = new SolidColorBrush(Colors.Red);
-                        row[$@"{FRows}"] = i;
+                          row[$@"{FRows}"] = i;
                         string temp = Convert.ToString(row[$@"{FRows}"]);
                         // row["B"] = i;
                         dt.Rows.Add(row);
@@ -244,27 +258,34 @@ namespace ITAirOffice
                     tst.ItemsSource = dt.DefaultView;
                     DataRowView drv = tst.Items[0] as DataRowView;
                     string aaa = drv[$@"{FRows}"].ToString();
-                 //   MessageBox.Show(aaa);
                     connection.Close();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                MessageBox.Show("Ошибка" + ex);
             }
         }
 
         private void cmbtimeFrom_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //SearchFlightsIn();
-            cmbtimeIn.IsEnabled = true;
-            cmbtimeIn.SelectedIndex = -1;
-            //string theSelectedStringInBanksComboBox = (string)cmbtimeFrom.SelectedItem;
-            //MessageBox.Show(theSelectedStringInBanksComboBox);
-
+                             
+            Check();
+            if (cmbtimeFrom.SelectedItem != null)
+            {
+                try
+                {
+                    STimeFr = ((DataRowView)cmbtimeFrom.SelectedItem).Row.ItemArray[0].ToString();
+                }
+                catch
+                {
+                    STimeFr = null;
+                }
+            }
+            SearchFlightsIn();
         }
 
-        private void cmbtimeIn_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        public void LoadMoney()
         {
             try
             {
@@ -275,33 +296,38 @@ namespace ITAirOffice
                     string query = $@"SELECT Price FROM Routes WHERE ID = {IDRoutes}";
                     SQLiteCommand cmd = new SQLiteCommand(query, connection);
                     SQLiteDataAdapter SDA = new SQLiteDataAdapter(cmd);
-                    SQLiteDataReader dr = null;
-                    string Money = null;
+                    SQLiteDataReader dr = null;                    
                     dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
                         Money = dr["Price"].ToString();
                     }
-                    lblmoney.Content = Money;
+                    lblmoney.Content = Money + "  ₽";
+                    lblmoney.Visibility = Visibility.Visible;
 
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
-            }                   // Check();
-                    // SearchFlightsIn();           
-       }
-
-        private void cmbtimeIn_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-          //  MessageBox.Show("");
-          //dell           
+                MessageBox.Show("Ошибка" + ex);
+            }
         }
-
-        private void cmbtimeIn_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void cmbtimeIn_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SearchFlightsIn();
+            //SearchFlightsIn();
+            //Check();
+            if (cmbtimeIn.SelectedItem != null)
+            {
+                try
+                {
+                    CmbTimeIn = ((DataRowView)cmbtimeIn.SelectedItem).Row.ItemArray[0].ToString();
+                }
+                catch
+                {
+                    CmbTimeIn = null;
+                }
+            }
+            dtDate.IsEnabled = true;
         }
 
         private void tst_LoadingRow(object sender, DataGridRowEventArgs f)
@@ -316,9 +342,17 @@ namespace ITAirOffice
                     {
                         connection.Open();
                         DataRow row = item.Row;
-                        string FRows = cmbrow.Items.GetItemAt(cmbrow.SelectedIndex).ToString();
+                        string FRows;
+                        if (cmbrow.SelectedItem == null)
+                        {
+                            FRows = "A";
+                        }
+                        else
+                        {
+                            FRows = cmbrow.Items.GetItemAt(cmbrow.SelectedIndex).ToString();
+                        }
                         string query = $@"SELECT NumberRow FROM Passengers 
-                                                WHERE Passengers.Row = '{FRows}' and NumberRow = {proverka};"; //
+                                                WHERE Passengers.Row = '{FRows}' and NumberRow = {proverka} and DateFly = '{DateInPicker}' and IDFlights ={IDFlights};"; //
                         SQLiteDataReader dr = null;
                         SQLiteCommand cmd = new SQLiteCommand(query, connection);
                         dr = cmd.ExecuteReader();
@@ -346,9 +380,9 @@ namespace ITAirOffice
                     connection.Close();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                MessageBox.Show("Ошибка" + ex);
             }
         }
         
@@ -360,7 +394,7 @@ namespace ITAirOffice
                 {
                     cmbnumber.Items.Clear();
                     connection.Open();
-                    string query = $@"SELECT IDPlane FROM Flights WHERE IDRoute = {IDRoutes} and TimeFrom = '{STimeFr}' ";
+                    string query = $@"SELECT IDPlane FROM Flights WHERE IDRoute = {IDRoutes} and TimeFrom = '{STimeFr}' and TimeIn = '{CmbTimeIn}' ";
                     SQLiteCommand cmd = new SQLiteCommand(query, connection);
                     SQLiteDataAdapter SDA = new SQLiteDataAdapter(cmd);
                     SQLiteDataReader dr = null;
@@ -369,6 +403,11 @@ namespace ITAirOffice
                     {
                         IdPlane = dr["IDPlane"].ToString();
                     }
+                    query = $@"SELECT ID FROM Flights WHERE IDRoute = {IDRoutes} and TimeFrom = '{STimeFr}' and TimeIn = '{CmbTimeIn}'";
+                    cmd = new SQLiteCommand(query, connection);
+                    SDA = new SQLiteDataAdapter(cmd);
+                    dr = null;
+                    IDFlights = Convert.ToInt32(cmd.ExecuteScalar());
                     query = $@"SELECT NumberSeats,NumberRows FROM Planes WHERE ID = {IdPlane}";
                     cmd = new SQLiteCommand(query, connection);
                     SDA = new SQLiteDataAdapter(cmd);
@@ -380,10 +419,19 @@ namespace ITAirOffice
                         NumberSeats = dr["NumberSeats"].ToString();
                         NumberRows = dr["NumberRows"].ToString();
                     }
-                    string FRows = cmbrow.Text;
+                    string FRows;
+                    if (cmbrow.SelectedItem == null)
+                    {
+                        FRows = "A";
+                    }
+                    else
+                    {
+                        FRows = cmbrow.Items.GetItemAt(cmbrow.SelectedIndex).ToString();
+                    }
+                    cmbnumber.SelectedItem = null;
                     for (int i = 1; i<= Convert.ToInt32(NumberSeats); i++)
                     {
-                        query = $@"SELECT NumberRow FROM Passengers WHERE Passengers.Row = '{FRows}' and NumberRow = {i};"; //
+                        query = $@"SELECT NumberRow FROM Passengers WHERE Passengers.Row = '{FRows}' and NumberRow = {i} and DateFly = '{DateInPicker}' and IDFlights ='{IDFlights}';"; //
                         cmd = new SQLiteCommand(query, connection);
                         SDA = new SQLiteDataAdapter(cmd);
                         dr = null;
@@ -403,9 +451,9 @@ namespace ITAirOffice
                     connection.Close();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                MessageBox.Show("Ошибка" + ex);
             }
         }
 
@@ -440,10 +488,12 @@ namespace ITAirOffice
             //MessageBox.Show(name);
             //string name = cmbrow.SelectionBoxItem.ToString();
             //MessageBox.Show(name);
-           // string s = cmbrow.Items.GetItemAt(cmbrow.SelectedIndex).ToString();
-           // MessageBox.Show(s);
+            // string s = cmbrow.Items.GetItemAt(cmbrow.SelectedIndex).ToString();
+            // MessageBox.Show(s);
+            LoadSeatsInComb();
             LoadDG();
             cmbnumber.SelectedIndex = - 1;
+            cmbnumber.IsEnabled = true;
         }
 
         private void cmbrow_Loaded(object sender, RoutedEventArgs e)
@@ -478,14 +528,142 @@ namespace ITAirOffice
           
         }
 
+        private void txtFam_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (int.TryParse(e.Text, out int i))
+            {
+                e.Handled = true;
+            }
+        }
+       
+
+
+        private void txtnumberpass_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (!Char.IsDigit(e.Text, 0)) e.Handled = true;
+        }
+
+        private void txtserpass_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (!Char.IsDigit(e.Text, 0)) e.Handled = true;
+        }
+
+        private void txtName_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (int.TryParse(e.Text, out int i))
+            {
+                e.Handled = true;
+            }            
+        
+        }
+
+        private void txtOtchec_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (int.TryParse(e.Text, out int i))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void btnback_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow Aftoriz = new MainWindow();
+            this.Close();
+            Aftoriz.ShowDialog();
+        }
+
+        private void btnbuybillet_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbFromAir.SelectedIndex != -1 && cmbInAir.SelectedIndex != -1 && cmbtimeFrom.SelectedIndex != -1 && cmbtimeIn.SelectedIndex != -1 && dtDate.Text != null && txtFam.Text != null && txtName.Text != null && cmbrow.SelectedIndex != -1 && cmbnumber.SelectedIndex != -1 && txtnumberpass.Text.Length == 4  && txtserpass.Text.Length == 8)
+            {
+                try
+                {
+                    using (SQLiteConnection connection = new SQLiteConnection(Connection.conn))
+                    {
+                        connection.Open();
+                        bool resultClass = int.TryParse(cmbFromAir.SelectedValue.ToString(), out int IDFromAir);
+                        bool resultClass2 = int.TryParse(cmbInAir.SelectedValue.ToString(), out int IDFromFrom);
+                        DateTime? selectedDate = dtDate.SelectedDate;
+                        string DateInDay = selectedDate.Value.ToString("dd", System.Globalization.CultureInfo.InvariantCulture);
+                        string DateInMes = selectedDate.Value.ToString("MM", System.Globalization.CultureInfo.InvariantCulture);
+                        string sdasd = dtDate.SelectedDateFormat.ToString("d");
+                        string DataInDayMes = dtDate.Text;
+                        string Famel = txtFam.Text;
+                        string Name = txtName.Text;
+                        string Otchest = txtOtchec.Text;
+                        string Row = cmbrow.Text;
+                        string NumberRow = cmbnumber.Text;
+                        string NumberPass = txtnumberpass.Text;
+                        string SerriaPass = txtserpass.Text;
+                        string IDKOD = Row + NumberRow + DateInDay + DateInMes + IDFlights;
+                        string query = $@"INSERT INTO Passengers ('Family','Name','LastName','PassportNumber','PassportSeries','Money','Row','NumberRow','DateFly','IDFlights','IDKOD') VALUES ('{Famel}','{Name}','{Otchest}','{NumberPass}','{SerriaPass}','{Money}','{Row}','{NumberRow}','{DataInDayMes}','{IDFlights}','{IDKOD}')"; //Получение данных из таблицы Девайсы
+                        SQLiteCommand cmd = new SQLiteCommand(query, connection);
+                        cmd.ExecuteNonQuery();
+                        connection.Close();
+                        MessageBox.Show("Билет оформлен");
+                        MessageBox.Show($@"Ваш идентификационный код: " + IDKOD);
+                        MainWindow Aftoriz = new MainWindow();
+                        this.Close();
+                        Aftoriz.ShowDialog();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка" + ex);
+                }
+            }
+        }
+
         private void cmbInAir_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Check();
+            SearchFlightsFrom();
+        }
+
+        private void dtDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            cmbrow.IsEnabled = true;
+            DateInPicker = dtDate.Text;
+            LoadDG();
+            LoadMoney();
+          //  LoadDG();
         }
 
         private void cmbFromAir_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Check();
+            LoadcmbAirIn();
+            cmbrow.SelectedIndex = -1;
+        }
+      
+        public DateTime DateStart { get; private set; }
+        DataTable dtTime = new DataTable();
+
+        //Свойство должно уведомлять об изменениях через PropertyChanged
+        public DateTime DateEnd { get; private set; }
+
+
+        public void MyViewModel()
+        {        
+            dtDate.BlackoutDates.Clear(); 
+            var firstDate = DateTime.Today.AddDays(-14);
+            var lastDate = DateTime.Today.AddDays(14);
+            var dateCounter = DateTime.Now.AddDays(-1);
+            dtDate.BlackoutDates.Add(new CalendarDateRange(firstDate, dateCounter));            
+            dtDate.DisplayDateStart = firstDate;
+            dtDate.DisplayDateEnd = lastDate;
+        }
+
+        public void TimeLoad()
+        {
+            //txtTime.Visibility = Visibility.Hidden;
+            var timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 1);
+            timer.IsEnabled = true;
+           // timer.Tick += (s, e) => { txtTime.Text = ("Время: " + DateTime.Now.ToString("T")); };
+            timer.Start();
+           // txtTime.Visibility = Visibility.Visible;
+            lblDate.Content = "Дата: " + (DateTime.Now.ToString("d"));
         }
     }
 }
